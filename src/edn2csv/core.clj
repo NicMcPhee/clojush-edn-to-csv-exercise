@@ -3,7 +3,8 @@
            [clojure.edn :as edn]
            [clojure.java.io :as io]
            [clojure.pprint :as pp]
-           [iota])
+           [iota]
+           [me.raynes.fs :as fs])
   (:gen-class))
 
 ; Ignores (i.e., returns nil) any EDN entries that don't have the
@@ -69,7 +70,26 @@
       (r/fold +)
       )))
 
+(defn build-individual-csv-filename
+  [edn-filename strategy]
+  (str (fs/parent edn-filename)
+       "/"
+       (fs/base-name edn-filename ".edn")
+       (if strategy
+         (str "_" strategy)
+         "_sequential")
+       "_individuals.csv"))
+
 (defn -main
   "I don't do a whole lot ... yet."
-  [& args]
-  (println "Hello, World!"))
+  [edn-filename & [strategy]]
+  (let [individual-csv-file (build-individual-csv-filename edn-filename strategy)]
+    (time
+      (condp = strategy
+        "sequential" (edn->csv-sequential edn-filename individual-csv-file)
+        "pmap" (edn->csv-pmap edn-filename individual-csv-file)
+        "iota" (edn->csv-iota edn-filename individual-csv-file)
+        (edn->csv-sequential edn-filename individual-csv-file))))
+  ; Necessary to get threads spun up by `pmap` to shutdown so you get
+  ; your prompt back right away when using `lein run`.
+  (shutdown-agents))
