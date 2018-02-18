@@ -7,6 +7,9 @@
            [me.raynes.fs :as fs])
   (:gen-class))
 
+; The header line for the Individuals CSV file
+(def individuals-header-line "UUID:ID(Individual),Generation:int,Location:int,:LABEL")
+
 ; Ignores (i.e., returns nil) any EDN entries that don't have the
 ; 'clojure/individual tag.
 (defn individual-reader
@@ -36,6 +39,7 @@
 
 (defn edn->csv-sequential [edn-file csv-file]
   (with-open [out-file (io/writer csv-file)]
+    (safe-println out-file individuals-header-line)
     (->>
       (line-seq (io/reader edn-file))
       ; Skip the first line because it's not an individual
@@ -47,6 +51,7 @@
 
 (defn edn->csv-pmap [edn-file csv-file]
   (with-open [out-file (io/writer csv-file)]
+    (safe-println out-file individuals-header-line)
     (->>
       (line-seq (io/reader edn-file))
       ; Skip the first line because it's not an individual
@@ -59,6 +64,7 @@
 
 (defn edn->csv-reducers [edn-file csv-file]
   (with-open [out-file (io/writer csv-file)]
+    (safe-println out-file individuals-header-line)
     (->>
       (iota/seq edn-file)
       (r/map (partial edn/read-string {:default individual-reader}))
