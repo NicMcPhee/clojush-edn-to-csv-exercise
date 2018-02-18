@@ -232,6 +232,30 @@ argument. So you can call this on command line using things like:
 * `lein run ../data/log1.edn pmap`
 * `lein run ../data/log1.edn reducers`
 
+## Remember that parallelism messes with output order
+
+If you have a sequential version of the system working, it would seem
+reasonable to compare the results of your parallel output with the serial
+output as a way of checking that your parallel version works. The problem
+there is that the output of the parallel versions will almost certainly
+not be in the same order as the serial output so you can't do something
+simple like `diff` the output files.
+
+They should, however, have the same lines in a possibly different order, so
+using `sort` to order them and then `diff` the resulting files. If, for
+example, you have `Individuals_serial.csv` and `Individuals_pmap.csv`, then
+this would let you compare them:
+
+```{bash}
+sort Individuals_serial.csv > Individuals_serial.csv.sorted
+sort Individuals_pmap.csv > Individuals_pmap.csv.sorted
+diff Individuals_serial.csv.sorted Individuals_pmap.csv.sorted
+```
+
+If the two files have same lines but in a different order
+then the `diff` should return nothing (i.e., there are no
+differences).
+
 ## License
 
 Copyright © 2018 Nic McPhee
