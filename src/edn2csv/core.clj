@@ -57,7 +57,7 @@
       count
       )))
 
-(defn edn->csv-iota [edn-file csv-file]
+(defn edn->csv-reducers [edn-file csv-file]
   (with-open [out-file (io/writer csv-file)]
     (->>
       (iota/seq edn-file)
@@ -83,14 +83,13 @@
        "_Individuals.csv"))
 
 (defn -main
-  "I don't do a whole lot ... yet."
   [edn-filename & [strategy]]
   (let [individual-csv-file (build-individual-csv-filename edn-filename strategy)]
     (time
       (condp = strategy
         "sequential" (edn->csv-sequential edn-filename individual-csv-file)
         "pmap" (edn->csv-pmap edn-filename individual-csv-file)
-        "iota" (edn->csv-iota edn-filename individual-csv-file)
+        "reducers" (edn->csv-reducers edn-filename individual-csv-file)
         (edn->csv-sequential edn-filename individual-csv-file))))
   ; Necessary to get threads spun up by `pmap` to shutdown so you get
   ; your prompt back right away when using `lein run`.
