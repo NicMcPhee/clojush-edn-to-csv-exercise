@@ -78,7 +78,7 @@
        (if strategy
          (str "_" strategy)
          "_sequential")
-       "_individuals.csv"))
+       "_Individuals.csv"))
 
 (defn -main
   "I don't do a whole lot ... yet."
