@@ -15,7 +15,9 @@
 
 ; I got this from http://yellerapp.com/posts/2014-12-11-14-race-condition-in-clojure-println.html
 ; It prints in a way that avoids weird interleaving of lines and items.
-; We may not need this when we write with the csv library.
+; In several ways it would be better to use a CSV library like
+; clojure.data.csv, but that won't (as written) avoid the interleaving
+; problems, so I'm sticking with this approach for now.
 (defn safe-println [output-stream & more]
   (.write output-stream (str (clojure.string/join "," more) "\n")))
 
